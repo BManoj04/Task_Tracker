@@ -1,21 +1,19 @@
 package com.example.tasktrackerfinal;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
+
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+
 import android.widget.ListView;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -43,17 +41,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1,list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_multiple_choice,list);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                indexval = null;
-                et.setText("");
-                et.setText(list.get(position));
-                listView.setAdapter(adapter);
-                indexval = list.indexOf(et.getText().toString());
+
             }
         });
 
@@ -84,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener buttonupdate = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(indexval != null) {
                     list.set(indexval, et.getText().toString());
 
@@ -108,24 +104,34 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener buttondelete = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(indexval != null) {
-                    list.remove(indexval.intValue());
-                    et.setText("");
-                    indexval = null;
-                    Store();
+                ArrayList<Integer> ittodel = new ArrayList<>();
+                int temp = 0;
+                System.out.println(list.size());
+                System.out.println(listView.getCount());
+                for (int itm = 0; itm<list.size();itm++){
 
-                    listView.setAdapter(adapter);
-                    Toast.makeText(MainActivity.this, "One Task Finished", Toast.LENGTH_SHORT).show();
+                    if(listView.isItemChecked(itm)) {
+                        ittodel.add(itm);
+                    }
                 }
-                else {
+                System.out.println(ittodel);
+                System.out.println(ittodel.size());
+                for (int i = 0; i<ittodel.size(); i++){
+                    list.remove(ittodel.get(i)-temp);
+                    temp=temp+1;
+                }
+                ittodel.clear();
+                Store();
+                listView.setAdapter(adapter);
+                if(temp==0){
                     Toast.makeText(MainActivity.this, "Select The Task", Toast.LENGTH_SHORT).show();
+
                 }
-            }
+                else {Toast.makeText(MainActivity.this, "Task Finished", Toast.LENGTH_SHORT).show();
+                }
+                }
         };
         delete.setOnClickListener(buttondelete);
-
-
-
 
         }
     private void Store() {
@@ -149,9 +155,5 @@ public class MainActivity extends AppCompatActivity {
             list = new ArrayList<>();
             et.setText("");
         }
-
         }
     }
-
-
-
